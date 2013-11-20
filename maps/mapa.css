@@ -1,0 +1,241 @@
+/* 
+    Document   : mapa
+    Created on : 11/06/2013, 17:05:39
+    Author     : mbigoli1
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.clear{
+    clear:both;
+}
+
+/*Legenda*/
+#legendaMapa {
+    text-align:left;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    margin-bottom: 10px;
+    margin-top: 21px;
+    overflow: auto;
+}
+
+#legendaMapa ul{
+    list-style: none;
+    margin-left: 5px;
+    padding-bottom: 10px;
+}
+
+#legendaMapa ul li {
+    color: #000099;
+    font-weight: bold;
+    background-repeat: no-repeat;
+}
+
+#legendaMapa ul li ul {
+    margin-left: 15px;
+}
+
+#legendaMapa a:link, #menuVertical a:visited{
+    color: #999999;
+}
+
+#legendaMapa a:hover{
+    text-decoration: none;
+}
+
+#legendaMapa ul li ul li{
+    color: #555555;
+    font-weight: normal;
+    display: block;
+    margin-left: -10px;
+    text-align: left;
+    min-height: 21px;
+    background-position: 16px 0px;
+    padding-top: 5px;
+}
+
+#legendaMapa input{
+    border: 0px;
+    float: left;
+    margin-top: 3px;
+}
+
+.balaoMapa{
+    padding-left: 30px;
+}
+
+#opcoesMapa{
+    overflow: auto;
+    height: 500px;
+}
+
+.iconeMais{
+   background-image: url("../imagens/mais.png");
+}
+
+.iconeMenos{
+   background-image: url("../imagens/menos.png");
+}
+
+.iconeMais ul{
+    display: none;
+}
+
+.clusterOption{
+    font-size: 0.67em;
+    border: 1px solid black;
+    padding-left: 18px;
+    width: 230px;
+    margin: 5px;
+}
+
+.clusterOption .makeCluster{
+    padding: 0px;
+}
+
+.clusterOption .makeCluster input{
+    margin-right: 1px !important;
+}
+
+.camposRestricao{
+    width: 100px;
+    display: block;
+    float: left;
+    height: 40px;
+}
+
+.camposRestricao select{
+    border: 1px solid #000;
+    background-color: #fff;
+    width: 98px;
+}
+
+.icone{
+    width: 22px;
+    height: 22px;
+    display: block;
+    float: left;
+    background-color: #ff0000;
+}
+
+#legendaMapa label{
+    height: 22px;
+    width: auto;
+    display: block;
+}
+
+#rotas fieldset{
+    -webkit-box-shadow: 3px 4px 3px rgba(50, 50, 50, 0.75);
+    -moz-box-shadow:    3px 4px 3px rgba(50, 50, 50, 0.75);
+    box-shadow:         3px 4px 3px rgba(50, 50, 50, 0.75);
+    margin-top: 20px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+}
+#rotas fieldset fieldset{
+    margin-top:7px;
+    margin-left:-10px;
+    margin-right:10px
+}
+#rotas{
+    font-size:10px;
+}
+#rotas legend{
+    border:1px solid #000;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+    margin-left: 10px;
+    padding:2px;
+    font-weight: bold;
+
+}
+
+#rotas input[type=text]{
+    border:1px solid #000;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    width: 150px;
+    margin: 3px;
+    font-size: 10px;
+    padding:2px;
+    font-weight: bold;
+}
+
+#rotas .ui-tabs{
+    padding:1px;
+}
+#rotas .ui-widget{
+    font-size:10px;
+}
+#rotas .ui-tabs .ui-tabs-panel{
+    padding:0px;
+}
+
+#rotas .acoesRotas li {
+    float: left;
+    display: block;
+    width: 25%;
+    
+}
+
+#rotas .acoesRotas li a{
+    background-repeat: no-repeat;
+   padding-left:16px;
+    
+}
+#rotas .acoesRotas li a:link, #rotas .acoesRotas li a:link{
+    color: #000
+} 
+
+#rotas input.sliderValor{
+    width: 22px;
+    font-size: 9px;
+}
+.botaoLegendaEditarRota{
+    
+}
+
+.botaoSalvarRota{
+    background-image: url("../imagens/salvarRotaDesabilitado.png");
+}
+
+.botaoEditarRota{
+    background-image: url("../imagens/editar.png");
+    background-size: 13px;
+}
+
+.botaoSalvarRota{
+    background-image: url("../imagens/salvarRotaDesabilitado.png");
+    background-size: 12px;
+}
+
+.botaoEditarDadosRota{
+    background-image: url("../imagens/enviar_dado.png");
+    background-size: 12px;
+}
+
+.botaoEditarEstiloRota{
+    background-image: url("../imagens/brush_2.png");
+    background-size: 14px;
+}
+
+#sliderTransp0{
+    width: 100px;
+}
+
+.transparencia{
+    margin-left: 90px;
+    margin-top: -26px;
+}
+
+.transparencia div{
+    width: 100px;
+}
+
+.estiloCaixa{
+    display: none;
+}
