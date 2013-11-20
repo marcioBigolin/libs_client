@@ -49,9 +49,7 @@
 	filter:Alpha(Opacity=0);
 }
 
-.ui-front {
-	z-index: 100;
-}
+.ui-front {z-index: 9999;}
 
 
 /* Interaction Cues

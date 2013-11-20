@@ -1,41 +1,21 @@
-/**
- * 
- * @param {type} nome
- * @param Integer id - id da camada
- * @returns {ItemLegenda}
- */
+//Estrutura das opções
+
 function ItemLegenda(nome, id) {
-    this.idCamada = id;
     this.nome = nome;
     this.icone = 'linha.png';
     this.geradorIcone = false;
     this.cluster = false;
     this.subItem = false;
     this.style = false;
+    this.idCamada = id;
     this.checked = true;
-    this.rota = new Rota();
-    this.setaDistancia = function(){
-        var dist  = this.rota.distancia / 1000;
-        dist = dist.toFixed(2) + ' Km';
-        $('#distanciaRota'+this.idCamada).val(dist);
-    };
-}
-
-function Rota(id) {
-    this.idRota = id;
-    this.nome = false;
-    this.geometria = false;
-    this.pontosSelecionados = new Array();
-    this.tipoRota = 1;
-    this.layer = false;
-    this.cor = null;
-    this.ordem = new Array();
-    this.distancia = 0;
+    this.dim = new Array();
+    this.click = false;
 }
 
 function Caminho() {
     //Atualiza a variavel caminho das imagens
-    this.imagens = "imagens/";
+    this.imagens = "imagens/mapa/";
     // Caminho do local onde estão os arquivos kml
     this.KML = '../dados_geograficos/sct/';
     //caminho servidor
@@ -65,15 +45,6 @@ function estiloCluster(icone) {
     };
 
 
-    //             externalGraphic: "${getIco}",
-    //        graphicWidth: 20,
-    //        graphicHeight: 20,
-    //        fillOpacity: 1,
-    //        fontColor:"#000000",
-    //        yOffset:"80",
-    //        fontSize:12,
-    //        label:"${getLabel}"
-    // Define three rules to style the cluster features.
     var unique = new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Comparison({
             type: OpenLayers.Filter.Comparison.EQUAL_TO,
@@ -102,6 +73,7 @@ function estiloCluster(icone) {
             property: "count",
             lowerBoundary: 2,
             upperBoundary: 16
+
                     //value: 15
         }),
         symbolizer: {
@@ -120,7 +92,6 @@ function estiloCluster(icone) {
 
         }
     });
-
     var middleRule = new OpenLayers.Rule({
         filter: new OpenLayers.Filter.Comparison({
             type: OpenLayers.Filter.Comparison.BETWEEN,
@@ -208,7 +179,6 @@ function Mapa(mapa) {
 
     //Vetor de camadas
     this.camadas = new Array();
-    this.editaRota = new Array();
 
     //Vetor de features para camadas de 
     this.features = new Array();
@@ -219,11 +189,8 @@ function Mapa(mapa) {
     //contador de idCamada
     this.id = 0;
 
-    //arvore dimensoes e atributos
-    this.dim = new Array();
 
-    //
-
+    this.popUp = false;
 
     //O Mapa
     this.idMapa = mapa;
@@ -253,8 +220,10 @@ function Mapa(mapa) {
         this.map.addControl(new OpenLayers.Control.LayerSwitcher({
             'ascending': false
         }));
-        var position = new OpenLayers.LonLat(-5724847, -3365618);
-        var zoom = 10;
+
+
+        var position = new OpenLayers.LonLat(-5685361.54, -3382739.89);
+        var zoom = 11;
         var gmaps = new OpenLayers.Layer.Google(
                 "Google Hybrid",
                 {
@@ -263,8 +232,19 @@ function Mapa(mapa) {
                 }
         );
         this.map.addLayer(gmaps);
+
         this.map.setCenter(position, zoom);
-        
+
+        this.map.addControl(
+                new OpenLayers.Control.MousePosition({
+            prefix: '<a target="_blank" ' +
+                    'href="http://spatialreference.org/ref/epsg/4326/">' +
+                    'EPSG:4326</a> coordinates: ',
+            separator: ' | ',
+            numDigits: 2,
+            emptyString: 'Mouse is not over map.'
+        })
+                );
     };
 
     this.adicionaCamada = function(camada) {
@@ -272,268 +252,95 @@ function Mapa(mapa) {
         this.id++;
         this.camadas[this.id] = camada;
         return this.id;
-    };
-    
-    this.adicionaLoaderCamada = function(){
-        this.id++;
-        this.camadas[this.id] = false;
-        return this.id;
     }
 
     this.adicionaItemLegenda = function(itemLegenda) {
-        //this.legenda.push(itemLegenda);
-        var that = this;       
-        if(itemLegenda.idCamada == -1){
-            itemLegenda.idCamada =  this.adicionaLoaderCamada();
-            itemLegenda.checked = false;
-        }
-        
+        this.legenda.push(itemLegenda);
+        var that = this;
         var id = itemLegenda.idCamada;
-        this.legenda[id]= itemLegenda;
-        
+        var dim = itemLegenda.dim;
         //itemLegenda = new ItemLegenda('teste');
         var icone = this.caminho.base + this.caminho.imagens + itemLegenda.icone;
-        var html = '<li id="itemDaLegenda'+id+'"> <label>';
+        var html = '<li> <label>';
         html += ' <input type="checkbox" id="layer' + id + '" class="mapOverlays"';
         if (itemLegenda.checked) {
             html += ' checked="checked" ';
         }
         html += ' /> <span id="icone' + id + '" class="icone" ';
-        html += 'style="background-image:url(' + icone + ')"> </span>';
+        html += 'style="background-image:url(' + icone + ');"> </span>';
         html += itemLegenda.nome + " </label>";
 
-        if (itemLegenda.cluster) {
-            html = html.substring(0, (html.length - 8))
-            html += '<sub><a href="#" id="maisCluster' + id + '" class="maisCluster">[-] Cluster</a></sub></label>';
-            html += '<ul class="clusterOption" id="clusterOption' + id + '"> <li> <label class="makeCluster">';
-            html += '    <input type="checkbox"  name="cluster' + id + '" ';
-            html += '              id="makeCluster' + id + '" />Make Cluster</label><ul class="legendaCluster">';
-            var tam = 20;
-            for (var a in itemLegenda.geradorIcone) {
-                html += '<li> <img src="' + itemLegenda.geradorIcone[a] + '" width="' + tam + '" height="' + tam + '"/>  </li>';
-                tam += 3;
-            }
-            html += '</ul>  <div style="clear:both"></div>';
-            html += ' </li> <li class="restricoesCluster">';
-            html += '   <label class="camposRestricao"> Dimension';
-            html += '     <select name="dimension' + id + '" id="dimension' + id + '">';
-            //              for(var a in this.dim){
-            //                  
-            //              }
-            html += '               <option value="political">Political</option>';
-            //                <option value="fisic">Fisic - Hidrographyc</option>
-            html += '           </select> </label>';
-            html += '          <label class="camposRestricao">Rule';
-            html += '     <select name="restricao' + id + '" id="restricao' + id + '">';
-            html += '                                                    <option value="town">Town</option>';
-            //                                                    <option>Micro-region</option>
-            //                                                    <option>Corede</option>
-            //                                                    <option>Estado</option>
-            //                                                    <option>País</option>
-            html += '     </select> </label>';
-            html += ' <p style="margin-top: 12px; text-indent: 2px;">';
-            html += '<a href=""  title="Adicionar restrição"  > AND </a></p>';
-
-            html += '<label class="campoRestricaoSlider">Size cluster:';
-            html += '<input type="text" id="valorSliderCluster' + id + '" />';
-
-            html += '<div id="sliderCluster' + id + '"></div></label><p class="duplicarCluster"><a href="" title="Duplicar plano de informação"> [+] Duplicate</a></p>';
-            html += '</li></ul><div style="clear:both"></div>';
-        }
-        if (itemLegenda.style) {
-            html += '<ul class="acoesRotas">'
-            html += '<li><a href="#editarRota" id="botaoEditarRota' + id + '" class="botaoEditarRota">Editar</a></li>';
-            html += '<li><a href="#salvarRota" id="botaoSalvarRota' + id + '" class="botaoSalvarRota" >Salvar</a></li>';
-            html += '<li><a href="#editarDadosRota" id="botaoEditarDadosRota' + id + '" class="botaoEditarDadosRota">Dados</a></li>';
-            html += '<li><a href="#editarEstiloRota" id="botaoEditarEstiloRota' + id + '" class="botaoEditarEstiloRota">Estilos</a></li>';
-            html += '<ul> <div class="clear" />'
-            html += '<fieldset class="infoRapida"> <legend>Informações</legend>';
-            html += '<label>Distância: <input type="text" id="distanciaRota'+id+'" /></label>';
-            html += '<label>Ordem: <div id="ordemLista'+id+'"></div></label></fieldset>';
-            html += '<label>Tipo:<input type"text" id="labelTipoRota"'+id+'"/></label>'
-            
-            html += '<fieldset id="estiloCaixa' + id + '" class="estiloCaixa"> <legend>Estilos</legend>';
-            html += '<div id="colorSelector' + id + '" class="colorpickerButtom">Trocar Cor</div>';
-            html += '<label class="transparencia">Transparência';
-            html += '<div id="sliderTransp' + id + '"></div>';
-            html += '<input type="text" id="valorSliderTransp' + id + '" class="sliderValor" value="0"/>';
-            html += '</label></fieldset>';
-        }
 
         html += '</li>'
+
         $("#legendaMapa .raiz").prepend(html);
         $('#layer' + id).click(
                 function() {
                     if ($('#layer' + id).is(":checked")) {
-                        if(that.camadas[id] === false){
-                            mostrarRotaSemLegenda(that.legenda[id].rota.idRota);
-                        }
                         that.camadas[id].setVisibility(true);
                     } else {
                         that.camadas[id].setVisibility(false);
-                        
                     }
                 }
         );
 
-        if (itemLegenda.icone === 'linha.png') {
+
+        if (itemLegenda.icone == 'linha.png') {
             $('#icone' + id).css('backgroundColor', '#f00');
         }
-        if (itemLegenda.style) {
 
-            $('#botaoEditarEstiloRota' + id).click(function() {
-                $("#estiloCaixa" + id).toggle("slow");
-            });
-
-            $("#botaoSalvarRota" + id).click(
-                    function() {
-                        //alert(id);
-                        if (itemLegenda.rota.tipoRota === 1) {
-                            salvarRota(itemLegenda.rota);
-                        } else {
-                            salvarRotaOtimizada(itemLegenda.rota);
-                        }
-                        //alert("Rota salva com sucesso!");
-                        return true;
-                    }
-            );
-
-            $("#botaoEditarDadosRota" + id).click(
-                    function() {
-                        dadosRota(itemLegenda.rota);
-                    }
-            );
-
-            if (typeof this.camadas[id] !== 'undefined') {
-                this.editaRota[id] = new OpenLayers.Control.ModifyFeature(
-                        this.camadas[id], {
-                    clickout: false, standalone: false}
-                );
-
-                this.map.addControl(this.editaRota[id]);
-            }
-            
-            $("#botaoEditarRota" + id).click(
-                    function() {
-                        if (that.editaRota[id].active) {
-                            //Se for descomentar isso, vai perder os vértices ao mudar de cor.
-//                            that.camadas[id].styleMap = new OpenLayers.Style({
-//                                strokeColor: that.camadas[id].cor,
-//                                strokeWidth: 4
-//                            });
-                            that.editaRota[id].deactivate();
-                            that.camadas[id].redraw();
-                            return 1;
-                        } else {
-                            that.editaRota[id].activate();
-                            that.camadas[id].redraw();
-                        }
-                    });
-
-            //$('#icone'+id).css('backgroundColor', '#f00');
-            $('#colorSelector' + id).ColorPicker({
-                color: '#0000ff',
-                onShow: function(colpkr) {
-                    $(colpkr).fadeIn(500);
-                    return false;
-                },
-                onHide: function(colpkr) {
-                    $(colpkr).fadeOut(500);
-                    return false;
-                },
-                onChange: function(hsb, hex, rgb) {
-                    $('#icone' + id).css('backgroundColor', '#' + hex);
-                    that.camadas[id].styleMap = new OpenLayers.StyleMap(
-                            new OpenLayers.Style({
-                        strokeColor: "#" + hex,
-                        strokeWidth: 4
-                    })
-                            );
-                    that.camadas[id].cor = "#" + hex;
-                    that.camadas[id].redraw();
-                }
-            });
-            $('#sliderTransp' + id).slider({
-                value: 0,
-                min: 0,
-                max: 100,
-                step: 5,
-                slide: function(event, ui) {
-                    $("#valorSliderTransp" + id).val(ui.value);
-                }
-            });
-        }
-        if (itemLegenda.cluster) {
-            $('#dimension' + id).change(function() {
-                alert(dim[$(this).val()]);
-                var restrict = dim[$(this).val()];
-                for (var a in restrict) {
-                    $('#restrict' + id).append('<option value="' + a + '">' + restrict[a] + '</option>');
-                }
-            });
-            this.features[id] = this.camadas[id].features;
-            this.styles[id] = this.camadas[id].styleMap;
-            itemLegenda.maisCluster = true;
-            $("#valorSliderCluster" + id).val(25);
-            $('#sliderCluster' + id).slider({
-                value: 25,
-                min: 0,
-                max: 100,
-                step: 5,
-                slide: function(event, ui) {
-                    $("#valorSliderCluster" + id).val(ui.value);
-                }
-            });
-            $('#maisCluster' + id).click(function() {
-
-                if (itemLegenda.maisCluster) {
-                    $('#clusterOption' + id).show('fast');
-                    $('#maisCluster' + id).html('[-] Cluster');
-                    itemLegenda.maisCluster = false;
-                } else {
-                    $('#clusterOption' + id).hide('fast');
-                    $('#maisCluster' + id).html('[+] Cluster');
-                    itemLegenda.maisCluster = true;
-                }
-                return false;
-            });
-            $('#makeCluster' + id).click(
-                    function() {
-                        that.map.removeLayer(that.camadas[id]);
-                        var layer;
-                        if ($('#makeCluster' + id).is(':checked')) {
-
-                            layer = new OpenLayers.Layer.Vector("Features", {
-                                strategies: [
-                                    new OpenLayers.Strategy.AnimatedCluster({
-                                        distance: 30,
-                                        animationMethod: OpenLayers.Easing.Expo.easeOut,
-                                        animationDuration: 20
-                                    })
-
-                                ],
-                                styleMap: new OpenLayers.StyleMap(
-                                        estiloCluster(
-                                        itemLegenda.geradorIcone
-                                        ))
-                            });
-                        } else {
-                            layer = new OpenLayers.Layer.Vector("Features", {
-                                strategies: [],
-                                styleMap: that.styles[id],
-                                cor: null
-                            });
-                        }
-                        that.camadas[id] = layer;
-                        that.map.addLayer(layer)
-                        layer.addFeatures(that.features[id])
-                    }
-            );
-        }
+        if (itemLegenda.click)
+            this.adicionaEventoClick(this.camadas[id]);
     };
 
-    this.adicionaCamadaPontoJson = function(url, icone) {
+    /**
+     * Função que realiza a troca de camada por uma com caracteristicas diferentes
+     * 
+     * @returns none
+     */
+    this.changeLayer = function(layer, id) {
+    };
 
+    this.adicionaEventoClick = function(camada) {
+        this.select = new OpenLayers.Control.SelectFeature(camada);
+        //Isso aqui agente tem la no catadores.
+        camada.events.on({
+            "featureselected": this.onFeatureSelect,
+            "featureunselected": this.onFeatureUnselect
+        });
+
+        this.map.addControl(this.select);
+        this.select.activate();
+    };
+
+    this.onPopupClose = function(evt) {
+        alert('teste')
+        this.select.unselectAll();
+    };
+
+    this.onFeatureSelect = function(event) {
+        var feature = event.feature;
+        var info = feature.attributes.dados;
+
+        var popup = new OpenLayers.Popup.FramedCloud("chicken",
+                feature.geometry.getBounds().getCenterLonLat(),
+                new OpenLayers.Size(100, 100),
+                info,
+                null, true, this.onPopupClose, true);
+        feature.popup = popup;
+        this.map.addPopup(popup);
+    };
+
+    this.onFeatureUnselect = function(event) {
+        var feature = event.feature;
+        if (feature.popup) {
+            this.map.removePopup(feature.popup);
+            feature.popup.destroy();
+            delete feature.popup;
+        }
+    }
+
+    this.geraCamadaPontoJson = function(url, icone) {
         var vector = new OpenLayers.Layer.Vector("Features", {
             protocol: new OpenLayers.Protocol.HTTP({
                 url: url,
@@ -541,20 +348,28 @@ function Mapa(mapa) {
             }),
             styleMap: new OpenLayers.StyleMap({
                 externalGraphic: icone,
-                graphicWidth: 20,
-                graphicHeight: 20,
+                graphicWidth: 25,
+                graphicHeight: 25,
                 fillOpacity: 1
+
 
             }),
             renderers: ['Canvas', 'SVG'],
             strategies: [new OpenLayers.Strategy.Fixed()]
         });
 
+        return vector;
+    };
+
+    this.adicionaCamadaPontoJson = function(url, icone) {
+
+        var vector = this.geraCamadaPontoJson(url, icone);
 
         return this.adicionaCamada(vector);
     }
 
     this.adicionaCamadaMapServer = function(url) {
+        //map.layer[limiteMunicipal].class[limiteMunicipal].style[0]=OUTLINECOLOR+255+255+0
         var layer = new OpenLayers.Layer.MapServer(
                 "OpenLayers WMS",
                 url,
@@ -608,95 +423,5 @@ function Mapa(mapa) {
 }
 
 
-function fixarRota() {
-    var val = parseInt($("#principal").css('width'));
-    var altura = parseInt($("#principal").css('height'));
-    if (!rotaFixa) {
-        rotaFixa = true;
-        $("#rotas").dialog('destroy');
-        var medida = '' + (val - 320) + 'px';
-        $("#rotas").css('width', '300px');
-        $("#rotas").css('height', altura);
-        $("#rotas").css('float', 'right');
-        $("#rotas").css('overflow', 'scroll');
-        $("#mapa").css('width', medida);
-        $("#mapa").css('float', 'left');
-        $("#fixarRotas").html('[Desafixar]')
-    } else {
-        rotaFixa = false;
-        $("#mapa").css('width', val);
-        $("#rotas").css('height', 'auto');
-        $("#rotas").dialog({
-            autoOpen: true,
-            width: 600,
-            height: 510,
-            modal: false
-        });
-
-        $("#fixarRotas").html('[Fixar]')
-    }
-}
-
-$(document).ready(
-        function() {
-            $("#rotas").dialog({
-                autoOpen: false,
-                width: 600,
-                height: 510,
-                modal: false
-            });
-            rotaFixa = false;
-            fixarRota();
-            $("#fixarRotas").click(function() {
-                fixarRota();
-            });
-
-        });
 
 
-
-
-function Loader()
-{
-    this.show = function() {
-        //        $.blockUI({
-        //            message:  'Carregando...',
-        //            css : {
-        //                border:'none',
-        //                padding:'15px',
-        //                backgroundColor:'#000',
-        //                '-webkit-border-radius':'10px',
-        //                '-moz-border-radius':'10px',
-        //                opacity:'.5',
-        //                color:'#fff'
-        //            }
-        //        });
-    }
-
-    this.hide = function() {
-        //        $.unblockUI();
-    }
-}
-
-//Funcões legenda
-function abrirMaisCluster(obj) {
-    var classe = obj.href.split("#");
-    classe = classe[1];
-    if (isFechado(classe)) {
-        $('.' + classe + ' .clusterOption').show('fast');
-        $(obj).html('[-] Cluster');
-    } else {
-        $('.' + classe + ' .clusterOption').hide('fast');
-        $(obj).html('[+] Cluster');
-    }
-
-}
-
-function isFechado(classe) {
-    if (pontosCluster[classe]) {
-        pontosCluster[classe] = false;
-        return true;
-    }
-    pontosCluster[classe] = true;
-    return false;
-}
