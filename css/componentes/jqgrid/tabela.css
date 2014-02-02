@@ -30,6 +30,13 @@
 
 
 
+#tabelaManterDados{
+    margin: 0px auto;
+    width: 90%;
+    margin-top: 20px;
+    margin-bottom: 50px;
+}
+
 #conteudo input.ui-pg-input, #conteudo  select.ui-pg-selbox{
     width: 20px;
     border-color: #cccccc;
