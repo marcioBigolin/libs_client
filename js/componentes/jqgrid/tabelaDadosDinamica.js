@@ -130,7 +130,7 @@ $(document).ready(function()
             useRp: true,
             caption: tabela[tab].titulo,
             pager: tabelaPaginacao,
-            rowNum: 80,
+            rowNum: 300,
             autowidth: false,
             width: largura,
             height: tabela[tab].altura,
@@ -176,6 +176,9 @@ $(document).ready(function()
                     sepclass: 'ui-separator',
                     sepcontent: ''
                 });
+        if (tabela[tab].filtrar){    
+            $('#tabelaDados' + tabela[tab].idTabela).jqGrid('filterToolbar',{stringResult: true,searchOnEnter : false});
+        }
 
         //Botão editar dados  
         if (tabela[tab].botaoEditar) {
