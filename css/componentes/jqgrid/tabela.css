@@ -9,15 +9,15 @@
 }
 
 .deletarIco {
-    background: url(../../imagens/deletarIco.png) no-repeat center left;
+    background: url(../../images/deletarIco.png) no-repeat center left;
 }
 
 .exportarPDFIco{
-    background: url(../../imagens/pdf_ico.png) no-repeat center left !important;
+    background: url(../../images/pdf_ico.png) no-repeat center left !important;
 }
 
 .gerarCSVIco{
-    background: url(../../imagens/csv_ico.gif) no-repeat center left !important;
+    background: url(../../images/csv_ico.gif) no-repeat center left !important;
 }
 
 .imprimirIco{
@@ -25,13 +25,12 @@
 }
 
 .gerarGraficoIco{
-    background: url(../../imagens/grafico_ico.png) no-repeat center left !important;
+    background: url(../../images/grafico_ico.png) no-repeat center left !important;
 }
 
 
 
 #tabelaManterDados{
-    margin: 0px auto;
     width: 90%;
     margin-top: 20px;
     margin-bottom: 50px;
