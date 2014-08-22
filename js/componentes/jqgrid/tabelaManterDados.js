@@ -28,7 +28,7 @@ function deletarDado() {
 
 $(document).ready(function()
 {
-    largura = parseInt($('#conteudo').css('width'));
+    largura = parseInt($('#tabelaDadosManterDados').parent().css('width'));
     tabelaPaginacao = "#tabelaPaginacaoManterDados";
     objeto = {
         url: tabelaManterDados.dados,
